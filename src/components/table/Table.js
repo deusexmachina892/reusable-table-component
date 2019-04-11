@@ -3,9 +3,16 @@ import React, { PureComponent } from 'react';
 class Table extends PureComponent{
     render(){
         return(
-            <div>
-                Table
-            </div>
+            <table>
+                <thead>
+                    <td>
+                        Sl no.
+                    </td>
+                </thead>
+                <tbody>
+                    <td>1</td>
+                </tbody>
+            </table>
         )
     }
 }

@@ -2,10 +2,10 @@ import React from 'react';
 import { shallow } from 'enzyme';
 
 // Component to Test
-import App from '../src/containers/App';
+import App from '../../src/containers/App';
 
 // Children
-import Table from '..//src/components/table/Table';
+import Table from '../../src/components/table/Table';
 
 describe('App Container', () => {
   const wrapper = shallow(<App />);
@@ -14,7 +14,6 @@ describe('App Container', () => {
   });
 
     it('renders a Table Component', () => {
-        console.log(wrapper.contains(Table))
-       // expect(wrapper.find(Table)).to.have.lengthOf(1);
+       expect(wrapper.find(Table)).toHaveLength(1);
     })
 })
