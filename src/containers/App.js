@@ -1,11 +1,12 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
+import Table from '../components/table/Table';
 
 class App extends PureComponent{
     render(){
         return(
-            <div>
-                App
-            </div>
+            <Fragment>
+                <Table />
+            </Fragment>
         )
     }
 }
