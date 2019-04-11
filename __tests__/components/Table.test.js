@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 
-import Table from '../../src/components/table/Table';
+import { Table } from '../../src/components/table';
 
 describe('Table Component', () => {
     const wrapper = shallow(<Table />)

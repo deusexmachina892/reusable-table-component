@@ -18,4 +18,4 @@ class Table extends PureComponent{
     }
 }
 
-export default Table;
+export { Table };

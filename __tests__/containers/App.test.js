@@ -5,7 +5,7 @@ import { shallow } from 'enzyme';
 import App from '../../src/containers/App';
 
 // Children
-import Table from '../../src/components/table/Table';
+import { Table } from '../../src/components/table';
 
 describe('App Container', () => {
   const wrapper = shallow(<App />);
