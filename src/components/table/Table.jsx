@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import styles from '../../assets/table.css';
+import '../../assets/table.css';
 
 class Table extends PureComponent{
     constructor(props){
@@ -29,7 +29,7 @@ class Table extends PureComponent{
             const uniqueParam = row[row._unique]
             return(<tr 
                     key={uniqueParam}
-                    className={this.state.selectedRows.includes(uniqueParam) && styles.selected}
+                    className={ this.state.selectedRows.includes(uniqueParam)? 'selectedRow': ''}
                     style={{display: 'grid', gridTemplateColumns, width:'100%'}} 
                     onClick={() => this.selectRows(uniqueParam)}
                 >
@@ -49,7 +49,6 @@ class Table extends PureComponent{
 
     selectRows(rowUniqueKeyValue){
         const { selectedRows } = this.state;
-
         if (selectedRows.includes(rowUniqueKeyValue)){
             this.setState( { selectedRows: selectedRows.filter(item => item !== rowUniqueKeyValue)})
         } else {
