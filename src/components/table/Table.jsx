@@ -1,5 +1,8 @@
-import React, { PureComponent } from 'react';
+import React, { PureComponent, Fragment } from 'react';
+
+import Pagination from './Pagination';
 import '../../assets/table.css';
+
 
 class Table extends PureComponent{
     constructor(props){
@@ -64,19 +67,22 @@ class Table extends PureComponent{
 
     render(){
         console.log(this.state.selectedRows)
-        const { cols, data, columnStyleProps } = this.props; 
+        const { cols, data, columnStyleProps, pagination } = this.props; 
         const gridTemplateColumns = Array(cols.length).fill('1fr').join(' ');
         return(
-            <table style={{display: 'flex', flexFlow: 'column wrap', justifyContent:'center'}}>
-                <thead  style={columnStyleProps}>
-                    <tr style={{display: 'grid', gridTemplateColumns, width:'100%'}}>
-                        {cols && this.renderColumns()}
-                    </tr>
-                </thead>
-                <tbody>
-                    {data && this.renderRows(gridTemplateColumns)}
-                </tbody>
-            </table>
+            <Fragment>
+                 <table style={{display: 'flex', flexFlow: 'column wrap', justifyContent:'center'}}>
+                    <thead  style={columnStyleProps}>
+                        <tr style={{display: 'grid', gridTemplateColumns, width:'100%'}}>
+                            {cols && this.renderColumns()}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {data && this.renderRows(gridTemplateColumns)}
+                    </tbody>
+                </table>
+                {pagination && <Pagination length={data.length}/>}
+            </Fragment>
         )
     }
 }

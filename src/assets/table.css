@@ -1,4 +1,35 @@
 .selectedRow{
     color: #fff;
-    background-color: blue;
+    background-color: #ddd;
+}
+
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+th:hover, th:active {
+    cursor: pointer;
+}
+.tr-even {
+    background: #f6f6f6;
+}
+
+tbody>tr :hover, tbody>r :active{
+    cursor: pointer;
+    background: #ddd !important;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin: 10px;
+    padding: 10px;
+}
+
+.pagination main{
+    display: flex;
+    justify-content: space-between;
+    width: 60%;
 }

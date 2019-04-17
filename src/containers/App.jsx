@@ -1,5 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
-import { TableContainer, Table } from '../components/table';
+import { TableContainer, Table, Pagination } from '../components/table';
 
 const cols = [
     {id: 'id', title: 'ID'},
@@ -43,6 +43,7 @@ class App extends PureComponent{
                         cols={cols}
                         data={data}
                         columnStyleProps={columnStyleProps}
+                        pagination
                     />
                 </TableContainer>
             </Fragment>
