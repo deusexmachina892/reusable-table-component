@@ -4,18 +4,34 @@ import fuzzysort from 'fuzzysort';
 import Pagination from './Pagination';
 import '../../assets/table.css';
 
-
 class Table extends PureComponent{
     constructor(props){
         super(props);
         this.state = {
             data: this.props.data || null,
             selectedRows: [],
-            rowsPerPage: this.props.data.length < 20?
-                            this.props.data.length:20,
-            currentPage: 1
+            rowsPerPage: this.props.data && (this.props.data.length < 20?
+                            this.props.data.length:20) || null,
+            currentPage: 1,
+            colTitles: []
         }
-       
+        this._defaultTableStyleProps = {
+            display: 'flex', 
+            flexFlow: 'column wrap', 
+            justifyContent:'center'
+        };
+
+        this._defaultColStyleProps = {
+            backgroundColor: '#787878',
+            color:'#fff',
+            display: 'flex',
+            flexFlow: 'row wrap',
+            justifyContent: 'center'
+        };
+
+        this._defaultBodyStyleProps = {
+            backgroundColor: 'white'
+        };
         this.renderColumns = this.renderColumns.bind(this);
         this.renderRows = this.renderRows.bind(this);
         this.handleColumnClick = this.handleColumnClick.bind(this);
@@ -25,7 +41,12 @@ class Table extends PureComponent{
         this.handlePageDisplay = this.handlePageDisplay.bind(this)
     }
 
-
+    componentDidMount() {
+        const colTitles = this.props.cols.map(col => col.title)
+        this.setState({
+            colTitles 
+        });
+    }
     renderColumns(){
         const { cols } = this.props;
         return cols.map( ({ id, title}) => {
@@ -56,7 +77,7 @@ class Table extends PureComponent{
                 >
                 {
                     Object.keys(row).map(rowKey => {
-                        return rowKey !== '_unique' &&
+                        return rowKey !== '_unique' && this.state.colTitles.includes(rowKey) &&
                             (<td key={rowKey}>
                                 {row[rowKey]}
                             </td>
@@ -133,7 +154,7 @@ class Table extends PureComponent{
             bodyStyleProps,
             pagination
         } = this.props; 
-        const gridTemplateColumns = Array(cols.length).fill('1fr').join(' ');
+        const gridTemplateColumns = Array(cols && cols.length).fill('1fr').join(' ');
         return(
             <Fragment>
                 <div>
@@ -146,17 +167,19 @@ class Table extends PureComponent{
                         />
                     </span>
                 </div>
-                 <table style={tableStyleProps}>
-                    <thead  style={columnStyleProps}>
+                {cols && cols.length > 0?
+                <table style={tableStyleProps || this._defaultTableStyleProps}>
+                    <thead  style={columnStyleProps || this._defaultColStyleProps}>
                         <tr style={{display: 'grid', gridTemplateColumns, width:'100%'}}>
-                            {cols && this.renderColumns()}
+                            {this.renderColumns()}
                         </tr>
                     </thead>
-                    <tbody style={bodyStyleProps}>
-                        {data && this.renderRows(gridTemplateColumns)}
+                    <tbody style={bodyStyleProps || this._defaultBodyStyleProps}>
+                        {data && data.length > 0? this.renderRows(gridTemplateColumns): <tr><td>Data Prop is missing</td></tr>}
                     </tbody>
                 </table>
-                {pagination && <Pagination
+                  : 'Columns are not defined'}
+                {cols && data && pagination && <Pagination
                                 rowsPerPage={rowsPerPage} 
                                 length={data.length}
                                 handleRowNumberChange={this.handleRowNumberChange}

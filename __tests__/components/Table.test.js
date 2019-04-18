@@ -25,7 +25,6 @@ describe('Table Component', () => {
                                     cols={cols}
                                     data={[]}
                                 />)
-
     it ('renders correctly', () => {
       expect(wrapper.length).toBe(1);
   });
@@ -72,9 +71,11 @@ describe('Table Component', () => {
     });
 
     it('renders tables with empty data correctly', () => {
-    
-    })
 
-   
-
+        // if data provide is an empty array
+        const tbody = wrapperWithNoData.find('tbody');
+        const tr = tbody.find('tr');
+        const cell = tr.find('td');
+        expect(cell.text()).toMatch('Data Prop is missing');
+    });
 })

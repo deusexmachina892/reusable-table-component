@@ -132,3 +132,8 @@ class App extends Component {
 2. The table can be paginated by providing a pagination prop to the Table Component
 3. The table can be filtered by entering search terms in the filter box. If there is no match, nothing will happen.
 4. Users can select rows and can apply an action on the rows. The action has to be prefined and provided as a prop.
+
+
+### Where to go from here:
+
+More features can be added and this component can be published as an npm package.
