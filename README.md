@@ -1,5 +1,8 @@
 ## REACTABLE - A Reusable React Table Component
 
+### Check out the live demo:
+https://reactable892.herokuapp.com/
+
 ### How to use
 Follow these steps to implement a reusable table component
 1. Clone the repo from github
@@ -123,3 +126,9 @@ class App extends Component {
     }
 }
 ```
+
+### Advanced Features
+1. The Table can be sorted by clicking on the columns. The column key that you click on will be considered for sorting.
+2. The table can be paginated by providing a pagination prop to the Table Component
+3. The table can be filtered by entering search terms in the filter box. If there is no match, nothing will happen.
+4. Users can select rows and can apply an action on the rows. The action has to be prefined and provided as a prop.

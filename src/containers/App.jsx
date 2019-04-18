@@ -47,10 +47,6 @@ const bodyStyleProps = {
     backgroundColor: 'white'
 };
 
-const styles = {
-   backgroundColor: 'black',
-   color: 'white'
-}
 class App extends PureComponent{
     render(){
         return(
