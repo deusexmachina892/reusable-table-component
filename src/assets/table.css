@@ -1,3 +1,8 @@
+.tableContainer div {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+}
 .selectedRow{
     color: #fff;
     background-color: #ddd;
@@ -7,6 +12,10 @@
 th, td {
     border: 1px solid #ddd;
     padding: 10px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: break-all;
 }
 
 th:hover, th:active {
@@ -16,20 +25,82 @@ th:hover, th:active {
     background: #f6f6f6;
 }
 
-tbody>tr :hover, tbody>r :active{
+tbody>tr:hover, tbody>tr:active{
     cursor: pointer;
     background: #ddd !important;
 }
 
 .pagination {
-    display: flex;
+    flex: 1;
     justify-content: center;
+    align-items: center;
+    flex-flow: column wrap;
     margin: 10px;
     padding: 10px;
 }
 
 .pagination main{
-    display: flex;
-    justify-content: space-between;
-    width: 60%;
+    flex: 1;
+    margin: 10px;
+/* justify-content: space-between; */
+    /* width: 60%; */
 }
+
+.pagination main span{
+    margin: 10px;
+    padding: 10px;
+}
+
+.pagination footer {
+    flex: 1;
+    margin: 10px;
+    padding: 10px;
+}
+
+.pagination footer span {
+    margin: 10px;
+    padding: 10px;
+}
+
+.pagination footer span:hover, 
+.pagination footer span:active {
+    cursor: pointer;
+    text-decoration: underline;
+    color: rgb(3, 78, 53);
+}
+
+.pagination footer span:focus {
+    outline: none;
+    text-decoration: underline;
+    color: #0077cc;
+}
+.paginationBtn {
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    color: #787878;
+    background-color: #fff;
+    padding: 10px;
+}
+
+.paginationBtn:hover, .paginationBtn:active {
+    cursor: pointer;
+    color: #fff;
+    background-color: #ddd;
+    transition: all 500ms;
+}
+
+.pagination input {
+    height: 30px;
+    width: 30px;
+}
+input:focus{
+    outline: none;
+
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 600px) {
+    .tableContainer div {
+        flex-flow: column wrap;
+    }
+} 

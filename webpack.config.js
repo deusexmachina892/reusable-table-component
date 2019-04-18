@@ -51,7 +51,7 @@ if(process.env.NODE_ENV === 'production'){
 } else {
     plugins.push(
         new webpack.HotModuleReplacementPlugin(),
-        new BundleAnalyzerPlugin()
+        // new BundleAnalyzerPlugin()
     )
 }
 

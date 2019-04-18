@@ -1,4 +1,5 @@
 import React, { PureComponent, Fragment } from 'react';
+import fuzzysort from 'fuzzysort';
 
 import Pagination from './Pagination';
 import '../../assets/table.css';
@@ -9,12 +10,28 @@ class Table extends PureComponent{
         super(props);
         this.state = {
             data: this.props.data || null,
-            selectedRows: []
+            selectedRows: [],
+            rowsPerPage: this.props.data.length < 20?
+                            this.props.data.length:20,
+            currentPage: 1
         }
+       
         this.renderColumns = this.renderColumns.bind(this);
         this.renderRows = this.renderRows.bind(this);
         this.handleColumnClick = this.handleColumnClick.bind(this);
+        this.handleRowNumberChange = this.handleRowNumberChange.bind(this);
+        this.resetRowState = this.resetRowState.bind(this);
+        this.checkRowStateOnBlur = this.checkRowStateOnBlur.bind(this);
+        this.handlePageDisplay = this.handlePageDisplay.bind(this)
     }
+
+    // componentDidMount(){
+    //         const { cols } = this.props;
+    //         const keys = cols.map( item => item.title);
+    //         console.log(keys)
+    //         this.searcher = new FuzzySearch(this.state.data, keys);
+    // }
+
     renderColumns(){
         const { cols } = this.props;
         return cols.map( ({ id, title}) => {
@@ -27,8 +44,15 @@ class Table extends PureComponent{
     }
 
     renderRows(gridTemplateColumns){
-        const { data } = this.state;
-        return data.map((row) => {
+        const { data, currentPage , rowsPerPage} = this.state;
+
+        // startingIndex depending on selected page
+        const startingIndex = rowsPerPage * (currentPage -1);
+
+        // Ending index depending on selected page
+        const endingIndex = rowsPerPage * currentPage;
+        const rows = data.slice(startingIndex, endingIndex);
+        return rows.map((row) => {
             const uniqueParam = row[row._unique]
             return(<tr 
                     key={uniqueParam}
@@ -65,23 +89,87 @@ class Table extends PureComponent{
         this.setState({ data: [...dataModified]});
     }
 
+    handleRowNumberChange(e){
+        // console.log(e.target.value);
+        const rowsPerPage = e.target.value;
+        console.log(rowsPerPage)
+        const { data } = this.state;
+
+        if ((Number(rowsPerPage) >0 && Number(rowsPerPage) <= data.length)|| rowsPerPage == '') {
+            this.setState({rowsPerPage});
+        }
+       
+    }
+
+    resetRowState(){
+        this.setState({ rowsPerPage: ''})
+    }
+
+    checkRowStateOnBlur(){
+        if(!this.state.rowsPerPage){
+            this.setState({ rowsPerPage: this.props.data.length < 20?
+                                         this.props.data.length:20})
+        }
+    }
+    
+    handlePageDisplay(page){
+        this.setState({ currentPage: page})
+    }
+
+    filterData(e){
+        let data;
+        const { cols } = this.props;
+        const keys = cols.map(item => item.title);
+
+        if(e.target.value) {
+            data = fuzzysort.go(e.target.value, this.props.data, {keys})
+            data = data.map(item => item.obj)
+        } else {
+            data = this.props.data;
+        }
+       
+       this.setState({ data, rowsPerPage: data.length <20? data.length : 20 })
+    }
     render(){
-        console.log(this.state.selectedRows)
-        const { cols, data, columnStyleProps, pagination } = this.props; 
+        const { data, rowsPerPage } = this.state;
+        const { 
+            cols,
+            tableStyleProps,
+            columnStyleProps,
+            bodyStyleProps,
+            pagination
+        } = this.props; 
         const gridTemplateColumns = Array(cols.length).fill('1fr').join(' ');
         return(
             <Fragment>
-                 <table style={{display: 'flex', flexFlow: 'column wrap', justifyContent:'center'}}>
+                <div>
+                    <span>Apply Action: </span>
+                    <span>
+                        <label>Filter By:</label>
+                        <input 
+                            placeholder={'Enter Search Term'}
+                            onChange={(e) => this.filterData(e)}
+                        />
+                    </span>
+                </div>
+                 <table style={tableStyleProps}>
                     <thead  style={columnStyleProps}>
                         <tr style={{display: 'grid', gridTemplateColumns, width:'100%'}}>
                             {cols && this.renderColumns()}
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody style={bodyStyleProps}>
                         {data && this.renderRows(gridTemplateColumns)}
                     </tbody>
                 </table>
-                {pagination && <Pagination length={data.length}/>}
+                {pagination && <Pagination
+                                rowsPerPage={rowsPerPage} 
+                                length={data.length}
+                                handleRowNumberChange={this.handleRowNumberChange}
+                                resetRowState={this.resetRowState}
+                                checkRowStateOnBlur={this.checkRowStateOnBlur}
+                                handlePageDisplay ={this.handlePageDisplay}
+                                />}
             </Fragment>
         )
     }

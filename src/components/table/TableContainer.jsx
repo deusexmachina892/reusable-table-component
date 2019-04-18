@@ -4,11 +4,11 @@ import React, { Component } from 'react';
 class TableContainer extends Component{
     render(){
         const { 
-            tableStyleProps,
+            tableContainerStyleProps,
             children
         } = this.props;
         return(
-            <section style={tableStyleProps}>
+            <section className='tableContainer' style={tableContainerStyleProps}>
                 { children }
             </section>
         )
