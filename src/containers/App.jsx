@@ -47,10 +47,26 @@ const bodyStyleProps = {
     backgroundColor: 'white'
 };
 
+const styles = {
+   backgroundColor: 'black',
+   color: 'white'
+}
 class App extends PureComponent{
     render(){
         return(
             <Fragment>
+                <h2>Reusable React Table</h2>
+                <p>Go to
+                    &nbsp;
+                    <a 
+                        href='https://github.com/deusexmachina892/reusable-table-component'
+                        target='blank'
+                        rel='no-referrer'
+                    >
+                        Github
+                    </a>
+                    &nbsp;
+                    to read about the documentation and learn about the usage</p>
                 <TableContainer
                     tableContainerStyleProps={tableContainerStyleProps}
                 >
