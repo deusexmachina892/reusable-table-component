@@ -25,12 +25,6 @@ class Table extends PureComponent{
         this.handlePageDisplay = this.handlePageDisplay.bind(this)
     }
 
-    // componentDidMount(){
-    //         const { cols } = this.props;
-    //         const keys = cols.map( item => item.title);
-    //         console.log(keys)
-    //         this.searcher = new FuzzySearch(this.state.data, keys);
-    // }
 
     renderColumns(){
         const { cols } = this.props;

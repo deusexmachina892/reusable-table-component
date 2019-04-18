@@ -52,7 +52,11 @@
     "start:dev": "cross-env NODE_ENV=development nodemon server",
     "start:prod": "cross-env NODE_ENV=production node server",
     "test": "NODE_ENV=test jest --config=jest.config.js --env=jsdom --watchAll",
-    "coverage": "node scripts/test.js src --coverage --env=jsdom"
+    "coverage": "node scripts/test.js src --coverage --env=jsdom",
+    "heroku-postbuild": "cross-env NODE_CONFIG_PRODUCTION=false npm run build"
+  },
+  "engines": {
+    "node": "8.11.3"
   },
   "author": "Rohan Dhar",
   "license": "ISC"
