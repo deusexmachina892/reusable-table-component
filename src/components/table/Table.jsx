@@ -72,7 +72,7 @@ class Table extends PureComponent{
         if(prevState.data.length !== this.state.data.length){
             const { currentPage, rowsPerPage, data, isSet } = this.state;
             const rowsPerPageNo = Number(rowsPerPage);
-            const lastPage = data.length % (rowsPerPageNo+1) === 0? data.length/(rowsPerPageNo+1) : (parseInt(data.length/(rowsPerPageNo))+1);
+            const lastPage = data.length % (rowsPerPageNo) === 0? data.length/(rowsPerPageNo) : (parseInt(data.length/(rowsPerPageNo)));
             console.log(data.length/rowsPerPageNo, data.length, rowsPerPageNo, rowsPerPage)
                 this.setState({
                     rowsPerPage: rowsPerPage > data.length || !isSet? data.length: rowsPerPage,
