@@ -181,6 +181,12 @@ class Table extends PureComponent{
         this.setState({ data: [...dataModified]});
     }
 
+    // clear out on focus
+    resetRowStateOnFocus(){
+        this.setState({
+            rowsPerPage: ''
+        })
+    }
     // method for handling number of rows per page in the pagination
     handleRowNumberChange(e){
         // console.log(e.target.value);
@@ -365,7 +371,7 @@ class Table extends PureComponent{
                                 rowsPerPage={rowsPerPage} 
                                 length={data.length}
                                 handleRowNumberChange={this.handleRowNumberChange}
-                                resetRowState={this.resetRowState}
+                                resetRowStateOnFocus={this.resetRowStateOnFocus}
                                 checkRowStateOnBlur={this.checkRowStateOnBlur}
                                 handlePageDisplay ={this.handlePageDisplay}
                                 currentPage={this.state.currentPage}

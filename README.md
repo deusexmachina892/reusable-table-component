@@ -133,6 +133,9 @@ class App extends Component {
 2. The table can be paginated by providing a pagination prop to the Table Component
 3. The table can be filtered by entering search terms in the filter box. If there is no match, nothing will happen.
 4. Users can select rows and can apply an action on the rows. The action has to be prefined and provided as a prop.
+5. Table Cells may be edited or deleted by clicking on the edit/delete icon beside in a row. For, multiple edits/deletes,
+select the rows and click on the edit/delete button in the column. To select all rows, click on the check box in the column row.
+*Note: Unique keys cannot be edited.
 
 ### Test Coverage
 Test coverage is decent and more tests can be added
