@@ -35,7 +35,7 @@ class Pagination extends Component{
                             <span>
                                 <input 
                                         value={rowsPerPage}
-                                        onFocus={() => this.props.resetRowState()}
+                                        //onFocus={() => this.props.resetRowState()}
                                         onChange={(e)=> this.props.handleRowNumberChange(e)}
                                         onBlur={(e) => this.props.checkRowStateOnBlur(e)}
                                     />

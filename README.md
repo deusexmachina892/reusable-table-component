@@ -43,6 +43,7 @@ Please be sure to provide data for all the keys you have defined in cols in the 
 In case a data is missing for a key defined in col, it will show NA.
 In case you have provided data for a key not defined in col, the value will not appear.
 In case you do not provide col and data props, you will be displayed with a warning.
+For the cols props, you must define a private _unique key, which should be defined as keyId and must indicate the unique key in the data
 
 The rest of the props are style props, namely:
 tableStyleProps, columnStyleProps, bodyStyleProps

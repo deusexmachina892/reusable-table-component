@@ -1,5 +1,6 @@
 import React, { PureComponent, Fragment } from 'react';
 import fuzzysort from 'fuzzysort';
+import mapKeys from 'lodash.mapkeys';
 
 import Pagination from './Pagination';
 import '../../assets/table.css';
@@ -14,9 +15,10 @@ class Table extends PureComponent{
                             this.props.data.length:20) || null,
             currentPage: 1,
             colTitles: [],
-            editingRow: false,
-            editingRowIndex: null
-        }
+            editingRowIndex: null,
+            _uniqueRowKey: null
+        };
+
         this._defaultTableStyleProps = {
             display: 'flex', 
             flexFlow: 'column wrap', 
@@ -43,26 +45,42 @@ class Table extends PureComponent{
         this.handlePageDisplay = this.handlePageDisplay.bind(this);
     }
 
+
     componentDidMount() {
-        const colTitles = this.props.cols.map(col => col.title)
+        const colsWithKeys = mapKeys(this.props.cols, 'id');
+        const colTitles = Object.keys(colsWithKeys).reduce((acc, ck) => {
+            if (ck !== '_unique'){
+                acc.push(colsWithKeys[ck].title);
+            }
+            return acc;
+        }, [])
+  
+        const uniqueRowKey = colsWithKeys[colsWithKeys._unique.keyId].title;
         this.setState({
             colTitles,
             rowsPerPage:  this.state.data && (this.state.data.length < 20?
-                            this.state.data.length:20) 
+                            this.state.data.length:20),
+            _uniqueRowKey: uniqueRowKey
         });
     }
     componentDidUpdate(prevProps, prevState){
         if(prevState.data.length !== this.state.data.length){
-            this.setState({
-                rowsPerPage: this.state.data && (this.state.data.length < 20?
-                    this.state.data.length:20)
-            });
+            const { currentPage, rowsPerPage, data } = this.state;
+            const rowsPerPageNo = Number(rowsPerPage);
+                if( data.length % rowsPerPageNo === 0 && Number(currentPage) > (data.length/rowsPerPageNo)){
+                    this.setState({
+                        currentPage: (data.length/rowsPerPageNo)
+                    })
+                }
         }
     }
+
+    // column renderer
     renderColumns(){
         const { cols } = this.props;
         return cols.map( ({ id, title}) => {
             return(
+                id !== '_unique' &&
                 <th key={id} onClick={() => this.handleColumnClick(title)}>
                     {title}
                 </th>
@@ -70,25 +88,27 @@ class Table extends PureComponent{
         })
     }
 
+    // row renderer
     renderRows(gridTemplateColumns){
-        const { data, currentPage , rowsPerPage, colTitles } = this.state; 
+        const { data, currentPage , rowsPerPage, colTitles, _uniqueRowKey } = this.state; 
         // startingIndex depending on selected page
         const startingIndex = rowsPerPage * (currentPage -1);
-
         // Ending index depending on selected page
         const endingIndex = rowsPerPage * currentPage;
         const rows = data.slice(startingIndex, endingIndex);
         return rows.map((row) => {
-            const uniqueParam = row[row._unique];
+            const uniqueParam = row[_uniqueRowKey];
             const rowIndex = this.state.data.indexOf(row);
-            return(<tr 
+            return(uniqueParam && <tr 
                     key={uniqueParam}
                     className={ this.state.selectedRows.includes(uniqueParam)? 'selectedRow': ''}
                     style={{display: 'grid', gridTemplateColumns: `0.25fr ${gridTemplateColumns} 0.25fr 0.25fr`, width:'100%'}} 
                 >
                     <td><input type='checkbox' onClick={()=> this.handleRowCheckBoxClick(row, uniqueParam)}/></td>
-                {
+                { 
                     colTitles.map(key => {
+                        // console.log(key)
+                        // console.log(row)
                         return(
                             <td key={key}>
                                 {  this.state.editingRowIndex === rowIndex?
@@ -117,6 +137,7 @@ class Table extends PureComponent{
         });
     }
 
+    // method for selecting rows
     selectRows(rowUniqueKeyValue){
         const { selectedRows } = this.state;
         if (selectedRows.includes(rowUniqueKeyValue)){
@@ -126,16 +147,17 @@ class Table extends PureComponent{
         }
     }
 
+    // method for sorting on column click
     handleColumnClick(sortingParameter){
         const { data } = this.state;
         let dataModified = data.sort((a, b) => a[sortingParameter] > b[sortingParameter]? 1: -1);
         this.setState({ data: [...dataModified]});
     }
 
+    // method for handling number of rows per page in the pagination
     handleRowNumberChange(e){
         // console.log(e.target.value);
         const rowsPerPage = e.target.value;
-        console.log(rowsPerPage)
         const { data } = this.state;
 
         if ((Number(rowsPerPage) >0 && Number(rowsPerPage) <= data.length)|| rowsPerPage == '') {
@@ -144,10 +166,12 @@ class Table extends PureComponent{
        
     }
 
+    // method to reset Row State
     resetRowState(){
         this.setState({ rowsPerPage: ''})
     }
 
+    // method to check row state when input is done with
     checkRowStateOnBlur(){
         if(!this.state.rowsPerPage){
             this.setState({ rowsPerPage: this.props.data.length < 20?
@@ -155,14 +179,16 @@ class Table extends PureComponent{
         }
     }
     
+    // method to handle the current page display
     handlePageDisplay(page){
         this.setState({ currentPage: page})
     }
 
+    // method for filtering
     filterData(e){
         let data;
-        const { cols } = this.props;
-        const keys = cols.map(item => item.title);
+        const { colTitles } = this.state;
+        const keys = colTitles;
 
         if(e.target.value) {
             data = fuzzysort.go(e.target.value, this.props.data, {keys})
@@ -174,10 +200,29 @@ class Table extends PureComponent{
        this.setState({ data, rowsPerPage: data.length <20? data.length : 20 })
     }
 
+    // method to handle column check box click for multiple selection
     handleColumnCheckboxClick(){
        
     }
 
+    // method for inserting new row
+   handleRowInsert(){
+       const { colTitles, _uniqueRowKey, data } = this.state;
+       const defaultRow = colTitles.reduce((acc, cv) => {
+            acc[cv] = '';
+            return acc;
+       }, {});
+       defaultRow['_unique'] = _uniqueRowKey;
+       const uniqueKey = _uniqueRowKey;
+       defaultRow[uniqueKey] = data.length + 1;
+
+       this.setState({ data: [
+           ...data,
+           defaultRow
+       ]});
+   }
+   
+   // toggle edit handler
    toggleEdit(rowIndex){
        let editingRowIndex;
        if(this.state.editingRowIndex === rowIndex){
@@ -189,20 +234,27 @@ class Table extends PureComponent{
             editingRowIndex
         })
     }
+
+    // row edit handler
     handleRowEdit(e, row, key, rowIndex){
         const data = this.state.data;
         if(e.target.value){
-            console.log(key, rowIndex, e.target.value);
             data[rowIndex][key] = e.target.value;
         }
         
         this.setState({data});
     }
+
+    // row delete handler
     handleRowDelete(row){
+        const { currentPage, rowsPerPage } = this.state;
         const data = this.state.data.filter(item => item !== row);
+      //  if
         this.setState({data});
 
     }
+
+    
     render(){
         const { data, rowsPerPage } = this.state;
         const { 
@@ -212,12 +264,15 @@ class Table extends PureComponent{
             bodyStyleProps,
             pagination
         } = this.props; 
-        const gridTemplateColumns = Array(cols && cols.length).fill('1fr').join(' ');
+        const gridTemplateColumns = Array(cols && cols.length - 1).fill('1fr').join(' ');
         return(
             <Fragment>
                 <div>
                     <span>
-                        Add Row
+                        Add Row &nbsp;
+                        <button className='addRowBtn' onClick={() => this.handleRowInsert()}>
+                        <i className="fas fa-plus"></i>
+                        </button>
                     </span>
                     <span>
                         <label>Filter By:</label>

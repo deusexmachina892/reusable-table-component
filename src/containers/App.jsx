@@ -5,15 +5,16 @@ const cols = [
     {id: 'id', title: 'ID'},
     {id: 'name', title: 'Name'},
     {id: 'username', title: 'Username'},
+    {id: '_unique', keyId: 'id'}
 ];
 const data = [
-    {ID: '1', Name: 'Rohan', Username: 'deusexmachina892', _unique: 'ID'},
-    {ID: '2', Name: 'Barry', Username: 'barry892', _unique: 'ID'},
-    {ID: '3', Name: 'James', Username: 'james', _unique: 'ID'},
-    {ID: '4', Name: 'Oliver', _unique: 'ID'},
-    {ID: '5', Name: 'Dipika', Username: 'dipika', _unique: 'ID'},
-    {ID: '6', Name: 'Oliver', Username: 'oliver', _unique: 'ID'},
-    {ID: '7', Name: 'Dipika', Username: 'dipika', _unique: 'ID'},
+    {ID: '1', Name: 'Rohan', Username: 'deusexmachina892'},
+    {ID: '2', Name: 'Barry', Username: 'barry892'},
+    {ID: '3', Name: 'James', Username: 'james'},
+    {ID: '4', Name: 'Oliver'},
+    {ID: '5', Name: 'Dipika', Username: 'dipika'},
+    {ID: '6', Name: 'Oliver', Username: 'oliver'},
+    {ID: '7', Name: 'Dipika', Username: 'dipika'},
 ];
 
 const tableContainerStyleProps = {

@@ -63,6 +63,21 @@ tbody>tr:hover, tbody>tr:active{
     background: #ddd !important;
 }
 
+.addRowBtn{
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    color: #787878;
+    background-color: #fff;
+    padding: 5px;
+    margin: 5px;
+}
+
+.addRowBtn:hover, .addRowBtn:active {
+    cursor: pointer;
+    color: #fff;
+    background-color: #ddd;
+    transition: all 500ms;
+}
 .pagination {
     flex: 1;
     justify-content: center;
