@@ -7,10 +7,9 @@ class Pagination extends PureComponent{
         node.focus();
     }
     componentDidUpdate(prevProps){
-        console.log(prevProps.currentPage, this.props.currentPage)
-       if(prevProps.currentPage !== this.props.currentPage
+       if((prevProps.currentPage !== this.props.currentPage
             || this.props.rowsPerPage && prevProps.rowsPerPage !== this.props.rowsPerPage
-            || prevProps.length !== this.props.length 
+            || prevProps.length !== this.props.length) && this.props.isSearch
         ) {
            const node = this.refs[this.props.currentPage];
            node && node.focus();
@@ -23,7 +22,7 @@ class Pagination extends PureComponent{
             <span 
                 className='pageLinks' 
                 key={page}
-                tabIndex ='1'
+                tabIndex ='0'
                 ref={page}
                 onClick = {() => this.props.handlePageDisplay(page)}
                 >{page}</span>

@@ -21,7 +21,8 @@ class Table extends PureComponent{
             _uniqueRowKey: null,
             isMultiple: false,
             displayModal: false,
-            isSet: false
+            isSet: false,
+            isSearching: false
         };
 
         this._defaultTableStyleProps = {
@@ -63,6 +64,7 @@ class Table extends PureComponent{
 
 
     componentDidMount() {
+        console.log('rerender')
         const colsWithKeys = mapKeys(this.props.cols, 'id');
         const colTitles = Object.keys(colsWithKeys).reduce((acc, ck) => {
             if (ck !== '_unique'){
@@ -345,6 +347,12 @@ class Table extends PureComponent{
         });
         this.toggleModalDisplay();
     }
+    toggleSearch(){
+        const { isSearching } = this.state;
+        this.setState({
+            isSearching: !isSearching
+        })
+    }
     render(){
         const { 
             data,
@@ -373,8 +381,9 @@ class Table extends PureComponent{
                         <label>Filter By:</label>
                         <input 
                             placeholder={'Enter Search Term'}
-
+                            onFocus={() => this.toggleSearch()}
                             onChange={(e) => this.filterData(e)}
+                            onBlur={() => this.toggleSearch()}
                         />
                     </span>
                 </div>
@@ -415,6 +424,7 @@ class Table extends PureComponent{
                                 handlePageDisplay ={this.handlePageDisplay}
                                 currentPage={this.state.currentPage}
                                 updatePage={this.updatePage}
+                                isSearching={this.state.isSearching}
                                 />}
                 {displayModal && <Modal
                     display={displayModal}
