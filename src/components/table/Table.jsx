@@ -43,11 +43,21 @@ class Table extends PureComponent{
         };
         this.renderColumns = this.renderColumns.bind(this);
         this.renderRows = this.renderRows.bind(this);
+        this.selectRows = this.selectRows.bind(this);
         this.handleColumnClick = this.handleColumnClick.bind(this);
         this.handleRowNumberChange = this.handleRowNumberChange.bind(this);
-        // this.resetRowState = this.resetRowState.bind(this);
+        this.resetRowStateOnFocus = this.resetRowStateOnFocus.bind(this);
         this.checkRowStateOnBlur = this.checkRowStateOnBlur.bind(this);
         this.handlePageDisplay = this.handlePageDisplay.bind(this);
+        this.filterData = this.filterData.bind(this);
+        this.handleRowInsert = this.handleRowInsert.bind(this);
+        this.handleRowEdit = this.handleRowEdit.bind(this);
+        this.handleRowDelete = this.handleRowDelete.bind(this);
+        this.toggleEdit = this.toggleEdit.bind(this);
+        this.toggleMultipleEdit = this.toggleMultipleEdit.bind(this);
+        this.toggleModalDisplay = this.toggleModalDisplay.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+        this.confirmDelete = this.confirmDelete.bind(this);
     }
 
 
