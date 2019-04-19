@@ -20,7 +20,8 @@ class Table extends PureComponent{
             editingRowIndex: null,
             _uniqueRowKey: null,
             isMultiple: false,
-            displayModal: false
+            displayModal: false,
+            isSet: false
         };
 
         this._defaultTableStyleProps = {
@@ -69,14 +70,14 @@ class Table extends PureComponent{
     }
     componentDidUpdate(prevProps, prevState){
         if(prevState.data.length !== this.state.data.length){
-            const { currentPage, rowsPerPage, data } = this.state;
+            const { currentPage, rowsPerPage, data, isSet } = this.state;
             const rowsPerPageNo = Number(rowsPerPage);
-                if( data.length % rowsPerPageNo === 0 && Number(currentPage) > (data.length/rowsPerPageNo)){
-                    this.setState({
-                        currentPage: (data.length/rowsPerPageNo),
-                        rowsPerPage: rowsPerPage > data.length? data.length: rowsPerPage
-                    })
-                }
+            const lastPage = data.length % (rowsPerPageNo+1) === 0? data.length/(rowsPerPageNo+1) : (parseInt(data.length/(rowsPerPageNo))+1);
+            console.log(data.length/rowsPerPageNo, data.length, rowsPerPageNo, rowsPerPage)
+                this.setState({
+                    rowsPerPage: rowsPerPage > data.length || !isSet? data.length: rowsPerPage,
+                    currentPage: lastPage
+                });
         }
     }
 
@@ -187,21 +188,21 @@ class Table extends PureComponent{
         const { data } = this.state;
 
         if ((Number(rowsPerPage) >0 && Number(rowsPerPage) <= data.length)|| rowsPerPage == '') {
-            this.setState({rowsPerPage});
+            this.setState({
+                rowsPerPage,
+                isSet: true
+            });
         }
        
     }
 
-    // method to reset Row State
-    // resetRowState(){
-    //     this.setState({ rowsPerPage: ''})
-    // }
-
-    // method to check row state when input is done with
+    // method to check row state when input is empty on blur
     checkRowStateOnBlur(){
         if(!this.state.rowsPerPage){
             this.setState({ rowsPerPage: this.props.data.length < 20?
-                                         this.props.data.length:20})
+                                         this.props.data.length:20,
+                            isSet: false
+                        });
         }
     }
     
@@ -269,15 +270,10 @@ class Table extends PureComponent{
     // row delete handler
     handleRowDelete(row){
         const data = this.state.data.filter(item => item !== row);
-      //  if
         this.setState({data});
 
     }
 
-    // method to handle column check box click for multiple selection
-    handleColumnCheckboxClick(){
-       
-    }
 
     toggleMultipleEdit(){
         const { isMultiple  } = this.state;
@@ -300,7 +296,6 @@ class Table extends PureComponent{
         })
     }
     confirmDelete(){
-        const { isMultiple} = this.state;
         this.setState({
             data: [],
         });
@@ -373,6 +368,7 @@ class Table extends PureComponent{
                                 resetRowState={this.resetRowState}
                                 checkRowStateOnBlur={this.checkRowStateOnBlur}
                                 handlePageDisplay ={this.handlePageDisplay}
+                                currentPage={this.state.currentPage}
                                 />}
                 {displayModal && <Modal
                     display={displayModal}

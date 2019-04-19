@@ -1,14 +1,23 @@
 import React, { Component } from 'react';
 
 class Pagination extends Component{
-
     componentDidMount(){
+        console.log(this.refs)
         const node = this.refs['1'];
         node.focus();
     }
+    componentDidUpdate(prevProps){
+        console.log(prevProps.currentPage, this.props.currentPage)
+       if(prevProps.currentPage !== this.props.currentPage
+            || this.props.rowsPerPage && prevProps.rowsPerPage !== this.props.rowsPerPage
+        ) {
+           const node = this.refs[this.props.currentPage];
+           node.focus();
+       }
+    }
     renderPageLinks(totalPages){
     
-        const pageArray = Object.keys(Array(totalPages).fill(1)).map(x => Number(x)+1)
+        const pageArray = Object.keys(Array(totalPages).fill(1)).map(x => Number(x)+1);
         return pageArray.map(page => (
             <span 
                 className='pageLinks' 
