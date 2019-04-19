@@ -10,9 +10,10 @@ class Pagination extends Component{
         console.log(prevProps.currentPage, this.props.currentPage)
        if(prevProps.currentPage !== this.props.currentPage
             || this.props.rowsPerPage && prevProps.rowsPerPage !== this.props.rowsPerPage
+            || prevProps.length !== this.props.length 
         ) {
            const node = this.refs[this.props.currentPage];
-           node.focus();
+           node && node.focus();
        }
     }
     renderPageLinks(totalPages){
@@ -54,10 +55,14 @@ class Pagination extends Component{
                             </span>
                    </span>
                     <span className='paginationBtnGroup'>
-                        <button className='paginationBtn'>
+                        <button className='paginationBtn' 
+                            onClick= {() => this.props.updatePage('prev')}
+                        >
                         Previous
                         </button>
-                        <button className='paginationBtn'>
+                        <button className='paginationBtn'
+                            onClick= {() => this.props.updatePage('next')}
+                        >
                                 Next
                             </button>
                     </span>

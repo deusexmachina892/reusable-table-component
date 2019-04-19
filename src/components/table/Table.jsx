@@ -49,6 +49,7 @@ class Table extends PureComponent{
         this.resetRowStateOnFocus = this.resetRowStateOnFocus.bind(this);
         this.checkRowStateOnBlur = this.checkRowStateOnBlur.bind(this);
         this.handlePageDisplay = this.handlePageDisplay.bind(this);
+        this.updatePage = this.updatePage.bind(this);
         this.filterData = this.filterData.bind(this);
         this.handleRowInsert = this.handleRowInsert.bind(this);
         this.handleRowEdit = this.handleRowEdit.bind(this);
@@ -80,14 +81,18 @@ class Table extends PureComponent{
     }
     componentDidUpdate(prevProps, prevState){
         if(prevState.data.length !== this.state.data.length){
-            const { currentPage, rowsPerPage, data, isSet } = this.state;
-            const rowsPerPageNo = Number(rowsPerPage);
-            const lastPage = data.length % (rowsPerPageNo) === 0? data.length/(rowsPerPageNo) : (parseInt(data.length/(rowsPerPageNo)));
-            console.log(data.length/rowsPerPageNo, data.length, rowsPerPageNo, rowsPerPage)
+            const { data, rowsPerPage, isSet } = this.state;
+            if(!isSet) {
                 this.setState({
-                    rowsPerPage: rowsPerPage > data.length || !isSet? data.length: rowsPerPage,
+                    rowsPerPage: data.length
+                })
+            } else {
+                const lastPage = data.length % rowsPerPage === 0? (data.length / rowsPerPage) : parseInt(data.length / rowsPerPage) + 1;
+                console.log(lastPage)
+                this.setState({
                     currentPage: lastPage
-                });
+                })
+            }
         }
     }
 
@@ -225,6 +230,29 @@ class Table extends PureComponent{
     // method to handle the current page display
     handlePageDisplay(page){
         this.setState({ currentPage: page})
+    }
+
+    // update page display on button click
+    updatePage(type) {
+        const { currentPage, data, rowsPerPage } = this.state;
+        const firstPage = 1;
+        const lastPage = data.length % rowsPerPage === 0? (data.length / rowsPerPage) : parseInt(data.length / rowsPerPage) + 1;
+        let newPage;
+        if(type === 'prev') {
+            newPage = currentPage - 1;
+            if (currentPage !== firstPage) {
+                this.setState({
+                    currentPage: newPage
+                });
+            }
+        } else {
+            newPage = currentPage + 1;
+            if (currentPage !== lastPage) {
+                this.setState({
+                    currentPage: newPage
+                });
+            }
+        }
     }
 
     // method for filtering
@@ -385,6 +413,7 @@ class Table extends PureComponent{
                                 checkRowStateOnBlur={this.checkRowStateOnBlur}
                                 handlePageDisplay ={this.handlePageDisplay}
                                 currentPage={this.state.currentPage}
+                                updatePage={this.updatePage}
                                 />}
                 {displayModal && <Modal
                     display={displayModal}
