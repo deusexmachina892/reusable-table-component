@@ -4,6 +4,7 @@ import mapKeys from 'lodash.mapkeys';
 
 import Pagination from './Pagination';
 import '../../assets/table.css';
+import Modal from './Modal';
 
 class Table extends PureComponent{
     constructor(props){
@@ -15,8 +16,11 @@ class Table extends PureComponent{
                             this.props.data.length:20) || null,
             currentPage: 1,
             colTitles: [],
+            changeSelectedRows: false,
             editingRowIndex: null,
-            _uniqueRowKey: null
+            _uniqueRowKey: null,
+            isMultiple: false,
+            displayModal: false
         };
 
         this._defaultTableStyleProps = {
@@ -40,7 +44,7 @@ class Table extends PureComponent{
         this.renderRows = this.renderRows.bind(this);
         this.handleColumnClick = this.handleColumnClick.bind(this);
         this.handleRowNumberChange = this.handleRowNumberChange.bind(this);
-        this.resetRowState = this.resetRowState.bind(this);
+        // this.resetRowState = this.resetRowState.bind(this);
         this.checkRowStateOnBlur = this.checkRowStateOnBlur.bind(this);
         this.handlePageDisplay = this.handlePageDisplay.bind(this);
     }
@@ -69,7 +73,8 @@ class Table extends PureComponent{
             const rowsPerPageNo = Number(rowsPerPage);
                 if( data.length % rowsPerPageNo === 0 && Number(currentPage) > (data.length/rowsPerPageNo)){
                     this.setState({
-                        currentPage: (data.length/rowsPerPageNo)
+                        currentPage: (data.length/rowsPerPageNo),
+                        rowsPerPage: rowsPerPage > data.length? data.length: rowsPerPage
                     })
                 }
         }
@@ -90,7 +95,16 @@ class Table extends PureComponent{
 
     // row renderer
     renderRows(gridTemplateColumns){
-        const { data, currentPage , rowsPerPage, colTitles, _uniqueRowKey } = this.state; 
+        const { 
+            data, 
+            currentPage, 
+            rowsPerPage, 
+            colTitles,
+            editingRowIndex,
+            selectedRows,
+            isMultiple,
+            _uniqueRowKey
+        } = this.state; 
         // startingIndex depending on selected page
         const startingIndex = rowsPerPage * (currentPage -1);
         // Ending index depending on selected page
@@ -99,38 +113,50 @@ class Table extends PureComponent{
         return rows.map((row) => {
             const uniqueParam = row[_uniqueRowKey];
             const rowIndex = this.state.data.indexOf(row);
+            const checker = (isMultiple  
+                && (selectedRows.length === 0 
+                    || selectedRows.includes(row)))
+                || (editingRowIndex !== null 
+            && editingRowIndex === rowIndex);
+            const checkBoxChecker = selectedRows.length === 0? isMultiple :selectedRows.includes(row);
             return(uniqueParam && <tr 
                     key={uniqueParam}
                     className={ this.state.selectedRows.includes(uniqueParam)? 'selectedRow': ''}
                     style={{display: 'grid', gridTemplateColumns: `0.25fr ${gridTemplateColumns} 0.25fr 0.25fr`, width:'100%'}} 
                 >
-                    <td><input type='checkbox' onClick={()=> this.handleRowCheckBoxClick(row, uniqueParam)}/></td>
+                    <td><input type='checkbox' 
+                    checked={checkBoxChecker} onChange={()=> this.selectRows(row, uniqueParam)}/></td>
                 { 
                     colTitles.map(key => {
-                        // console.log(key)
-                        // console.log(row)
                         return(
                             <td key={key}>
-                                {  this.state.editingRowIndex === rowIndex?
+                                {  
+                                   checker?
+                                    key !== _uniqueRowKey?
                                     <input 
                                         type='text'
                                         placeholder={this.state.data[rowIndex][key]}
                                         onChange={(e) => this.handleRowEdit(e, row, key, rowIndex)}
                                         style={{width: '100%', height: '100%'}}
-                                        />:
+                                        />
+                                        : <div>{row[key]}<span>(Unique Keys are Not editable)</span></div>
+                                        :
                                 <div>{row[key] || 'NA'}</div>}
                             </td>
                         );
                     })
                 }
-                <td onClick={() => this.toggleEdit(rowIndex)}>
-                    {this.state.editingRowIndex !== null && this.state.editingRowIndex === rowIndex?
+                <td onClick={() =>  !checkBoxChecker && this.toggleEdit(rowIndex)
+                      
+                        }>
+                    {   
+                        editingRowIndex !== null && editingRowIndex === rowIndex?
                         <i className="fas fa-check" style={{color: 'green'}}></i>
-                        :<i className="far fa-edit"></i>
+                        :<i className="far fa-edit" style={{color: checkBoxChecker?'#ddd':'#787878'}}></i>
                     }
                 </td>
-                <td onClick={() => this.handleRowDelete(row, rowIndex)}>
-                    <i className="far fa-trash-alt"></i>
+                <td onClick={() => !checkBoxChecker && this.handleRowDelete(row, rowIndex)}>
+                    <i className="far fa-trash-alt" style={{color: checkBoxChecker?'#ddd':'#787878'}}></i>
                 </td>
                 
             </tr>)
@@ -167,9 +193,9 @@ class Table extends PureComponent{
     }
 
     // method to reset Row State
-    resetRowState(){
-        this.setState({ rowsPerPage: ''})
-    }
+    // resetRowState(){
+    //     this.setState({ rowsPerPage: ''})
+    // }
 
     // method to check row state when input is done with
     checkRowStateOnBlur(){
@@ -198,11 +224,6 @@ class Table extends PureComponent{
         }
        
        this.setState({ data, rowsPerPage: data.length <20? data.length : 20 })
-    }
-
-    // method to handle column check box click for multiple selection
-    handleColumnCheckboxClick(){
-       
     }
 
     // method for inserting new row
@@ -247,16 +268,50 @@ class Table extends PureComponent{
 
     // row delete handler
     handleRowDelete(row){
-        const { currentPage, rowsPerPage } = this.state;
         const data = this.state.data.filter(item => item !== row);
       //  if
         this.setState({data});
 
     }
 
+    // method to handle column check box click for multiple selection
+    handleColumnCheckboxClick(){
+       
+    }
+
+    toggleMultipleEdit(){
+        const { isMultiple  } = this.state;
+        this.setState({
+            isMultiple: !isMultiple
+        })
+    }
+
+    toggleModalDisplay(){
+        const { displayModal } = this.state;
+        this.setState({
+            displayModal: !displayModal
+        })
+    }
     
+    closeModal(e){
+        e.stopPropagation();
+        this.setState({
+            displayModal: false
+        })
+    }
+    confirmDelete(){
+        const { isMultiple} = this.state;
+        this.setState({
+            data: [],
+        });
+        this.toggleModalDisplay();
+    }
     render(){
-        const { data, rowsPerPage } = this.state;
+        const { 
+            data,
+            rowsPerPage,
+            displayModal
+        } = this.state;
         const { 
             cols,
             tableStyleProps,
@@ -271,7 +326,8 @@ class Table extends PureComponent{
                     <span>
                         Add Row &nbsp;
                         <button className='addRowBtn' onClick={() => this.handleRowInsert()}>
-                        <i className="fas fa-plus"></i>
+                        <i className="fas fa-plus"
+                        ></i>
                         </button>
                     </span>
                     <span>
@@ -290,10 +346,18 @@ class Table extends PureComponent{
                         <table style={tableStyleProps || this._defaultTableStyleProps}>
                             <thead  style={columnStyleProps || this._defaultColStyleProps}>
                                 <tr style={{display: 'grid', gridTemplateColumns: `0.25fr ${gridTemplateColumns} 0.25fr 0.25fr`, width:'100%'}}>
-                                <th><input type='checkbox'/></th>
+                                <th
+                                     onClick={() => this.toggleMultipleEdit()}
+                                ><input type='checkbox'/></th>
                                     {this.renderColumns()}
-                                <th><i className="far fa-edit"></i></th>
-                                <th><i className="far fa-trash-alt"></i></th>
+                                <th
+                                    onClick={() => this.toggleMultipleEdit()}
+                                    >
+                                    <i className="far fa-edit"></i>
+                                </th>
+                                <th
+                                    onClick={() => this.toggleModalDisplay()}
+                                ><i className="far fa-trash-alt"></i></th>
                                 </tr>
                             </thead>
                             <tbody style={bodyStyleProps || this._defaultBodyStyleProps}>
@@ -310,6 +374,17 @@ class Table extends PureComponent{
                                 checkRowStateOnBlur={this.checkRowStateOnBlur}
                                 handlePageDisplay ={this.handlePageDisplay}
                                 />}
+                {displayModal && <Modal
+                    display={displayModal}
+                >
+                    <article className='modalContent'>
+                        <div>Are you sure you want to delete all rows?</div>
+                        <button className='addRowBtn' onClick={() => this.confirmDelete()}>Yes</button>
+                        <button className='cancelBtn' onClick={(e) => 
+                            this.closeModal(e)
+                        }>Cancel</button>
+                    </article>
+                        </Modal>}
             </Fragment>
         )
     }
