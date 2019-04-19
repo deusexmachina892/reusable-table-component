@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { createPortal } from 'react-dom';
 
-class Modal extends Component{
+class Modal extends PureComponent{
     constructor(props){
         super(props);
         this.el = document.createElement('div');

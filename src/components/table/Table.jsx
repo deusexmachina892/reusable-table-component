@@ -268,7 +268,7 @@ class Table extends PureComponent{
             data = this.props.data;
         }
        
-       this.setState({ data, rowsPerPage: data.length <20? data.length : 20 })
+    this.setState({ data })
     }
 
     // method for inserting new row
@@ -373,6 +373,7 @@ class Table extends PureComponent{
                         <label>Filter By:</label>
                         <input 
                             placeholder={'Enter Search Term'}
+
                             onChange={(e) => this.filterData(e)}
                         />
                     </span>

@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 
-class TableContainer extends Component{
+class TableContainer extends PureComponent{
     render(){
         const { 
             tableContainerStyleProps,

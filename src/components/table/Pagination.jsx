@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
-class Pagination extends Component{
+class Pagination extends PureComponent{
     componentDidMount(){
         console.log(this.refs)
         const node = this.refs['1'];
