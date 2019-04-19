@@ -46,7 +46,6 @@ const columnStyleProps = {
 const bodyStyleProps = {
     backgroundColor: 'white'
 };
-
 class App extends PureComponent{
     render(){
         return(

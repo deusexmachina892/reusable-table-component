@@ -1,21 +1,54 @@
 .tableContainer div {
     display: flex;
     justify-content: space-between;
-    margin: 20px 0;
+    padding: 20px 0;
+}
+.table-responsive-container{
+    overflow-x: auto;
 }
 .selectedRow{
     color: #fff;
     background-color: #ddd;
 }
 
-
+/* thead, tbody {
+    min-width: 200px;
+} */
+tr {
+    background-color: inherit;
+}
 th, td {
+    background-color: inherit;
+    min-width: 100px;
     border: 1px solid #ddd;
-    padding: 10px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     word-break: break-all;
+}
+
+
+
+td input[type='text'] {
+    height: 100%;
+    width: 100%; 
+    padding: 18.5px 0;
+     box-sizing: border-box;
+     -webkit-box-sizing:border-box;
+     -moz-box-sizing: border-box;
+}
+
+td div {
+    display: flex;
+    padding: 20px 0;
+    justify-content: center;
+    align-items: center;
+}
+
+td i {
+    display: flex;
+    align-self: center;
+    margin: 20% 0;
 }
 
 th:hover, th:active {
@@ -40,12 +73,20 @@ tbody>tr:hover, tbody>tr:active{
 }
 
 .pagination main{
-    flex: 1;
-    margin: 10px;
+    display: flex;
+    flex-flow: column wrap;
+    /* display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    grid-template-rows: repeat(6, 200px);
+    grid-gap: 1rem;
+    grid-auto-flow: dense; */
 /* justify-content: space-between; */
     /* width: 60%; */
 }
 
+.pagination main .paginationInfoGroup {
+
+}
 .pagination main span{
     margin: 10px;
     padding: 10px;
@@ -80,6 +121,7 @@ tbody>tr:hover, tbody>tr:active{
     color: #787878;
     background-color: #fff;
     padding: 10px;
+    margin: 10px;
 }
 
 .paginationBtn:hover, .paginationBtn:active {
@@ -101,6 +143,10 @@ input:focus{
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {
     .tableContainer div {
+        flex-flow: column wrap;
+    }
+    .pagination {
+        display: flex;
         flex-flow: column wrap;
     }
 } 

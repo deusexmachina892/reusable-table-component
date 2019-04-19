@@ -28,30 +28,30 @@ class Pagination extends Component{
         return(
             <section className='pagination'>
                 <main>
-                    <span>
+                    <span className='paginationInfoGroup'>
+                            <span>
+                                <label>Enter Rows Per Page</label>
+                            </span>
+                            <span>
+                                <input 
+                                        value={rowsPerPage}
+                                        onFocus={() => this.props.resetRowState()}
+                                        onChange={(e)=> this.props.handleRowNumberChange(e)}
+                                        onBlur={(e) => this.props.checkRowStateOnBlur(e)}
+                                    />
+                            </span>
+                            <span>
+                                <label>of {length} Rows</label>
+                            </span>
+                   </span>
+                    <span className='paginationBtnGroup'>
                         <button className='paginationBtn'>
                         Previous
                         </button>
-                    </span>
-                    <span>
-                        <label>Enter Rows Per Page</label>
-                    </span>
-                   <span>
-                        <input 
-                                value={rowsPerPage}
-                                onFocus={() => this.props.resetRowState()}
-                                onChange={(e)=> this.props.handleRowNumberChange(e)}
-                                onBlur={(e) => this.props.checkRowStateOnBlur(e)}
-                            />
-                   </span>
-                   <span>
-                        <label>of {length} Rows</label>
-                   </span>
-                   <span>
                         <button className='paginationBtn'>
                                 Next
                             </button>
-                   </span>
+                    </span>
                 </main>
                 <footer>
                     { this.renderPageLinks(totalPages) }

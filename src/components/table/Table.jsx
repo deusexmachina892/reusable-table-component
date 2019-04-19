@@ -13,7 +13,9 @@ class Table extends PureComponent{
             rowsPerPage: this.props.data && (this.props.data.length < 20?
                             this.props.data.length:20) || null,
             currentPage: 1,
-            colTitles: []
+            colTitles: [],
+            editingRow: false,
+            editingRowIndex: null
         }
         this._defaultTableStyleProps = {
             display: 'flex', 
@@ -38,14 +40,24 @@ class Table extends PureComponent{
         this.handleRowNumberChange = this.handleRowNumberChange.bind(this);
         this.resetRowState = this.resetRowState.bind(this);
         this.checkRowStateOnBlur = this.checkRowStateOnBlur.bind(this);
-        this.handlePageDisplay = this.handlePageDisplay.bind(this)
+        this.handlePageDisplay = this.handlePageDisplay.bind(this);
     }
 
     componentDidMount() {
         const colTitles = this.props.cols.map(col => col.title)
         this.setState({
-            colTitles 
+            colTitles,
+            rowsPerPage:  this.state.data && (this.state.data.length < 20?
+                            this.state.data.length:20) 
         });
+    }
+    componentDidUpdate(prevProps, prevState){
+        if(prevState.data.length !== this.state.data.length){
+            this.setState({
+                rowsPerPage: this.state.data && (this.state.data.length < 20?
+                    this.state.data.length:20)
+            });
+        }
     }
     renderColumns(){
         const { cols } = this.props;
@@ -59,8 +71,7 @@ class Table extends PureComponent{
     }
 
     renderRows(gridTemplateColumns){
-        const { data, currentPage , rowsPerPage} = this.state;
-
+        const { data, currentPage , rowsPerPage, colTitles } = this.state; 
         // startingIndex depending on selected page
         const startingIndex = rowsPerPage * (currentPage -1);
 
@@ -68,22 +79,39 @@ class Table extends PureComponent{
         const endingIndex = rowsPerPage * currentPage;
         const rows = data.slice(startingIndex, endingIndex);
         return rows.map((row) => {
-            const uniqueParam = row[row._unique]
+            const uniqueParam = row[row._unique];
+            const rowIndex = this.state.data.indexOf(row);
             return(<tr 
                     key={uniqueParam}
                     className={ this.state.selectedRows.includes(uniqueParam)? 'selectedRow': ''}
-                    style={{display: 'grid', gridTemplateColumns, width:'100%'}} 
-                    onClick={() => this.selectRows(uniqueParam)}
+                    style={{display: 'grid', gridTemplateColumns: `0.25fr ${gridTemplateColumns} 0.25fr 0.25fr`, width:'100%'}} 
                 >
+                    <td><input type='checkbox' onClick={()=> this.handleRowCheckBoxClick(row, uniqueParam)}/></td>
                 {
-                    Object.keys(row).map(rowKey => {
-                        return rowKey !== '_unique' && this.state.colTitles.includes(rowKey) &&
-                            (<td key={rowKey}>
-                                {row[rowKey]}
+                    colTitles.map(key => {
+                        return(
+                            <td key={key}>
+                                {  this.state.editingRowIndex === rowIndex?
+                                    <input 
+                                        type='text'
+                                        placeholder={this.state.data[rowIndex][key]}
+                                        onChange={(e) => this.handleRowEdit(e, row, key, rowIndex)}
+                                        style={{width: '100%', height: '100%'}}
+                                        />:
+                                <div>{row[key] || 'NA'}</div>}
                             </td>
-                        )
+                        );
                     })
                 }
+                <td onClick={() => this.toggleEdit(rowIndex)}>
+                    {this.state.editingRowIndex !== null && this.state.editingRowIndex === rowIndex?
+                        <i className="fas fa-check" style={{color: 'green'}}></i>
+                        :<i className="far fa-edit"></i>
+                    }
+                </td>
+                <td onClick={() => this.handleRowDelete(row, rowIndex)}>
+                    <i className="far fa-trash-alt"></i>
+                </td>
                 
             </tr>)
         });
@@ -145,6 +173,36 @@ class Table extends PureComponent{
        
        this.setState({ data, rowsPerPage: data.length <20? data.length : 20 })
     }
+
+    handleColumnCheckboxClick(){
+       
+    }
+
+   toggleEdit(rowIndex){
+       let editingRowIndex;
+       if(this.state.editingRowIndex === rowIndex){
+            editingRowIndex = null;
+       } else {
+           editingRowIndex = rowIndex
+       }
+        this.setState({
+            editingRowIndex
+        })
+    }
+    handleRowEdit(e, row, key, rowIndex){
+        const data = this.state.data;
+        if(e.target.value){
+            console.log(key, rowIndex, e.target.value);
+            data[rowIndex][key] = e.target.value;
+        }
+        
+        this.setState({data});
+    }
+    handleRowDelete(row){
+        const data = this.state.data.filter(item => item !== row);
+        this.setState({data});
+
+    }
     render(){
         const { data, rowsPerPage } = this.state;
         const { 
@@ -158,7 +216,9 @@ class Table extends PureComponent{
         return(
             <Fragment>
                 <div>
-                    <span>Apply Action: </span>
+                    <span>
+                        Add Row
+                    </span>
                     <span>
                         <label>Filter By:</label>
                         <input 
@@ -167,17 +227,25 @@ class Table extends PureComponent{
                         />
                     </span>
                 </div>
+               
                 {cols && cols.length > 0?
-                <table style={tableStyleProps || this._defaultTableStyleProps}>
-                    <thead  style={columnStyleProps || this._defaultColStyleProps}>
-                        <tr style={{display: 'grid', gridTemplateColumns, width:'100%'}}>
-                            {this.renderColumns()}
-                        </tr>
-                    </thead>
-                    <tbody style={bodyStyleProps || this._defaultBodyStyleProps}>
-                        {data && data.length > 0? this.renderRows(gridTemplateColumns): <tr><td>Data Prop is missing</td></tr>}
-                    </tbody>
-                </table>
+                <section 
+                    className='table-responsive-container' 
+                    style={{backgroundColor: tableStyleProps.backgroundColor || this._defaultTableStyleProps.backgroundColor}}>
+                        <table style={tableStyleProps || this._defaultTableStyleProps}>
+                            <thead  style={columnStyleProps || this._defaultColStyleProps}>
+                                <tr style={{display: 'grid', gridTemplateColumns: `0.25fr ${gridTemplateColumns} 0.25fr 0.25fr`, width:'100%'}}>
+                                <th><input type='checkbox'/></th>
+                                    {this.renderColumns()}
+                                <th><i className="far fa-edit"></i></th>
+                                <th><i className="far fa-trash-alt"></i></th>
+                                </tr>
+                            </thead>
+                            <tbody style={bodyStyleProps || this._defaultBodyStyleProps}>
+                                {data && data.length > 0? this.renderRows(gridTemplateColumns): <tr><td>Data Prop is missing</td></tr>}
+                            </tbody>
+                        </table>
+                </section>
                   : 'Columns are not defined'}
                 {cols && data && pagination && <Pagination
                                 rowsPerPage={rowsPerPage} 
